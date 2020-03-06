@@ -1,7 +1,6 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
 function result($value, $result)
 {
     if ($result) {
@@ -10,15 +9,24 @@ function result($value, $result)
     return array('css' => 'danger', 'note' => $value . ': FAIL');
 }
 
+function isApache()
+{
+    if (!strpos($_SERVER["SERVER_SOFTWARE"], 'nginx') === 0) {
+        return true;
+    }
+}
+
 function apacheModules()
 {
+
+
     $results = array();
     preg_match('/([\d]+\.[\d]+\.[\d]+)/', apache_get_version(), $version);
     $results[0] = array('css' => 'danger', 'note' => 'Version: ' . $version[0]);
     if (version_compare($version[0], '2.2') >= 0) {
         $results[0] = array('css' => 'success', 'note' => 'Version: ' . $version[0]);
     }
-    $requiredModules = array('mod_rewrite','mod_expires');
+    $requiredModules = array('mod_rewrite', 'mod_expires');
     $apacheModules = apache_get_modules();
     foreach ($requiredModules as $req) {
         $results[] = result($req, in_array($req, $apacheModules));
@@ -74,6 +82,7 @@ function phpOptionalExtensions()
     }
     return $results;
 }
+
 //apacheModules();
 ?>
 <!DOCTYPE html>
@@ -92,19 +101,22 @@ function phpOptionalExtensions()
 </head>
 <body>
 <div class="container">
-    <h1>Magento 2 requirements check script</h1>
-    <div class="panel panel-default">
-        <div class="panel-heading">Apache</div>
-        <div class="panel-body">
-            <?php foreach (apacheModules() as $result): ?>
-                <div class="alert alert-<?php echo $result['css'] ?>" role="alert"><?php echo $result['note'] ?></div>
-            <?php endforeach; ?>
+    <?php if (isApache()) : ?>
+        <h1>Magento 2 requirements check script</h1>
+        <div class="panel panel-default">
+            <div class="panel-heading">Apache</div>
+            <div class="panel-body">
+                <?php foreach (apacheModules() as $result): ?>
+                    <div class="alert alert-<?php echo $result['css'] ?>"
+                         role="alert"><?php echo $result['note'] ?></div>
+                <?php endforeach; ?>
+            </div>
         </div>
-    </div>
+    <?php endif; ?>
     <div class="panel panel-default">
         <div class="panel-heading">PHP</div>
         <div class="panel-body">
-            <div role="alert" class="alert alert-warning">Loaded php.ini file: <?php echo php_ini_loaded_file()?></div>
+            <div role="alert" class="alert alert-warning">Loaded php.ini file: <?php echo php_ini_loaded_file() ?></div>
             <?php foreach (phpExtensions() as $result): ?>
                 <div class="alert alert-<?php echo $result['css'] ?>" role="alert"><?php echo $result['note'] ?></div>
             <?php endforeach; ?>
