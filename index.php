@@ -130,6 +130,18 @@ function phpOptionalExtensions()
             <?php endforeach; ?>
         </div>
     </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Optional PHP Extension</div>
+        <div class="panel-body">
+            <?php echo sprintf("post_max_size = %d\n MB", ini_get('memory_limit')  ); ?>
+        </div>
+    </div>
+    <div class="panel panel-default">
+        <div class="panel-heading">Optional PHP Extension</div>
+        <div class="panel-body">
+            <?php echo sprintf("post_max_size = %d\n MB", ini_get('max_post_size')  ); ?>
+        </div>
+    </div>
 </div>
 </body>
 </html>
